@@ -9,6 +9,9 @@
     <!-- ১. Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
+    <!-- OnClicka TMA Rewarded Video SDK -->
+    <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
+
     <!-- ২. Adexium Interstitial Widget Script -->
     <script type="text/javascript" src="https://cdn.adexium.tech/assets/js/tg-ads-co-widget.min.js"></script>
     <!-- SDK fallback: একই official TMA SDK URL -->
@@ -172,9 +175,18 @@
 
         <div class="status-box" id="statusText">পছন্দের অপশন সিলেক্ট করুন</div>
 
+        <section class="stat-box" id="onclickaBannerSlot" style="margin:12px 0; min-height:60px;">
+            <div class="stat-label">Banner Ad</div>
+            <div data-banner-id="6154266"></div>
+        </section>
+
         <div class="btn-group">
             <button class="btn btn-direct-link" onclick="openDirectLink()">
                 💎 প্রিমিয়াম অফার (Direct Link)
+            </button>
+
+            <button class="btn btn-manual" onclick="showOnclickaRewardedAd()">
+                ▶ Rewarded Video দেখুন
             </button>
 
             <button class="btn btn-manual" onclick="showManualAd()">
@@ -189,7 +201,10 @@
         // =========================================================================
         // ⚙️ সেটিংস
         // =========================================================================
-        const WIDGET_ID = '14e840dc-ffe8-4fa7-be6f-0c9aa6d68527';
+        const WIDGET_ID = 'f9d967a8-3d11-400d-be42-c3bf7ca61d84';
+        const ONCLICKA_REWARDED_SPOTS = ['615426', '6154264'];
+        let onclickaShowMethods = [];
+        let onclickaInitIndex = 0;
         const DIRECT_LINK = 'https://get.atechspace.live/dl/8c075e7a-5255-4813-884c-03b9ae47ddbe';
 
         // একটি অ্যাড বন্ধ হওয়ার কত সেকেন্ড পর পরেরটি আসবে
@@ -228,6 +243,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             resetAutoButtonUI();
             initAdexium();
+            initOnclickaRewardedAds();
         });
 
         function initAdexium() {
@@ -291,6 +307,54 @@
 
             // পেজ খোলার সাথে সাথেই প্রথম অ্যাড লোড করে রাখি
             preloadAd();
+        }
+
+
+        // OnClicka TMA Rewarded Video: initialize both supplied spots.
+        async function initOnclickaRewardedAds() {
+            if (typeof window.initCdTma !== 'function') {
+                console.warn('[OnClicka] TMA SDK not available.');
+                return;
+            }
+            onclickaShowMethods = [];
+            for (const spotId of ONCLICKA_REWARDED_SPOTS) {
+                try {
+                    const show = await window.initCdTma({ id: spotId });
+                    if (typeof show === 'function') onclickaShowMethods.push({ spotId, show });
+                } catch (err) {
+                    console.warn('[OnClicka] Could not initialize rewarded spot', spotId, err);
+                }
+            }
+        }
+
+        async function showOnclickaRewardedAd() {
+            const button = document.querySelector('button[onclick="showOnclickaRewardedAd()"]');
+            if (button) button.disabled = true;
+            updateStatus('⏳ OnClicka Rewarded Video লোড হচ্ছে...');
+            try {
+                if (!onclickaShowMethods.length) await initOnclickaRewardedAds();
+                if (!onclickaShowMethods.length) {
+                    updateStatus('OnClicka Rewarded Video প্রস্তুত নয়। SDK, Spot ID ও Telegram Mini App সেটআপ পরীক্ষা করুন।');
+                    return;
+                }
+                let lastError = null;
+                for (const item of onclickaShowMethods) {
+                    try {
+                        await item.show();
+                        totalAdsWatched++;
+                        document.getElementById('adCounter').innerText = totalAdsWatched;
+                        updateStatus('✅ OnClicka Rewarded Video সম্পন্ন হয়েছে।');
+                        return;
+                    } catch (err) {
+                        lastError = err;
+                        console.warn('[OnClicka] Rewarded spot failed:', item.spotId, err);
+                    }
+                }
+                updateStatus('এখন OnClicka ভিডিও বিজ্ঞাপন পাওয়া যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।');
+                if (lastError) console.warn('[OnClicka] All rewarded spots failed:', lastError);
+            } finally {
+                if (button) button.disabled = false;
+            }
         }
 
         // ১. Direct Link
