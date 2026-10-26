@@ -11,7 +11,7 @@
 
     <!-- ২. Adexium Interstitial Widget Script -->
     <script type="text/javascript" src="https://cdn.adexium.tech/assets/js/tg-ads-co-widget.min.js"></script>
-    <!-- ফলব্যাক: প্রথম CDN লোড না হলে Adexium ডকের অফিশিয়াল CDN থেকে লোড হবে -->
+    <!-- SDK fallback: একই official TMA SDK URL -->
     <script type="text/javascript">
         if (typeof AdexiumWidget === 'undefined') {
             document.write('<script src="https://cdn.techtg.space/assets/js/tg-ads-co-widget.min.js"><\/script>');
@@ -200,7 +200,7 @@
 
         // 👉 প্রথমে true দিয়ে টেস্ট করুন (প্রতিবার টেস্ট অ্যাড আসবে)।
         //    টেস্ট অ্যাড এলে কোড ঠিক আছে; তারপর রিয়াল ইনকামের জন্য false করুন।
-        const DEBUG_MODE = true;
+        const DEBUG_MODE = false;
         // =========================================================================
 
         const tg = window.Telegram?.WebApp;
