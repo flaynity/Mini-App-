@@ -2,9 +2,6 @@
 <html lang="bn">
 <head>
 
-<script src="https://jsdelivr.net"></script>
-<script>eruda.init();</script>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>All-in-One Ad Monetization Mini App</title>
@@ -13,7 +10,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
     <!-- ২. Adexium Interstitial Widget Script -->
-    <script type="text/javascript" src="https://cdn.adexium.tech/assets/js/adexium-widget.min.js"></script>
+    <script type="text/javascript" src="https://cdn.techtg.space/assets/js/tg-ads-co-widget.min.js"></script>
     <!-- ফলব্যাক: প্রথম CDN লোড না হলে Adexium ডকের অফিশিয়াল CDN থেকে লোড হবে -->
     <script type="text/javascript">
         if (typeof AdexiumWidget === 'undefined') {
@@ -192,14 +189,14 @@
         // =========================================================================
         // ⚙️ সেটিংস
         // =========================================================================
-        const WIDGET_ID = 'f9d967a8-3d11-400d-be42-c3bf7ca61d84';
+        const WIDGET_ID = '14e840dc-ffe8-4fa7-be6f-0c9aa6d68527';
         const DIRECT_LINK = 'https://get.atechspace.live/dl/8c075e7a-5255-4813-884c-03b9ae47ddbe';
 
         // একটি অ্যাড বন্ধ হওয়ার কত সেকেন্ড পর পরেরটি আসবে
         const AUTO_AD_INTERVAL_SECONDS = 5;
 
         // অ্যাড লোড হতে সর্বোচ্চ কত মিলিসেকেন্ড অপেক্ষা করবে
-        const LOAD_TIMEOUT_MS = 5000;
+        const LOAD_TIMEOUT_MS = 15000;
 
         // 👉 প্রথমে true দিয়ে টেস্ট করুন (প্রতিবার টেস্ট অ্যাড আসবে)।
         //    টেস্ট অ্যাড এলে কোড ঠিক আছে; তারপর রিয়াল ইনকামের জন্য false করুন।
@@ -235,11 +232,11 @@
 
         function initAdexium() {
             if (typeof AdexiumWidget === 'undefined') {
-                updateStatus('❌ Adexium স্ক্রিপ্ট লোড হয়নি! ইন্টারনেট বা অ্যাড-ব্লকার চেক করুন');
+                updateStatus('Ad SDK লোড হয়নি। ইন্টারনেট/SDK URL পরীক্ষা করে আবার পেজ খুলুন।');
                 return;
             }
             if (!tg || !tg.initData) {
-                updateStatus('⚠️ এটি Telegram এর ভিতর থেকে খুলুন, ব্রাউজারে অ্যাড আসবে না');
+                updateStatus('⚠️ Telegram Mini App context পাওয়া যায়নি; Telegram-এর ভিতরে খুলে আবার চেষ্টা করুন।');
             }
 
             try {
@@ -272,7 +269,7 @@
                 isLoading = false;
                 if (wantShow) {
                     wantShow = false;
-                    updateStatus('⚠️ এই মুহূর্তে অ্যাড পাওয়া যায়নি, একটু পর আবার চেষ্টা করুন');
+                    updateStatus('এখন কোনো অ্যাড পাওয়া যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।');
                 }
                 // ব্যাকঅফ দিয়ে আবার প্রিলোড
                 clearTimeout(retryTimer);
@@ -396,7 +393,7 @@
             } catch (e) {
                 console.error('Display error:', e);
                 isShowing = false;
-                updateStatus('❌ অ্যাড দেখানো যায়নি, আবার চেষ্টা করুন');
+                updateStatus('অ্যাড দেখানো যায়নি। আবার চেষ্টা করুন।');
                 preloadAd();
                 return;
             }
@@ -418,7 +415,7 @@
                 isLoading = false;
                 if (wantShow) {
                     wantShow = false;
-                    updateStatus('❌ অ্যাড রিকোয়েস্ট করা যায়নি');
+                    updateStatus('অ্যাড রিকোয়েস্ট ব্যর্থ হয়েছে। SDK/Widget ID পরীক্ষা করুন।');
                 }
                 return;
             }
@@ -428,7 +425,7 @@
                 isLoading = false;
                 if (wantShow) {
                     wantShow = false;
-                    updateStatus('⚠️ অ্যাড লোড হতে দেরি হচ্ছে, আবার চেষ্টা করুন');
+                    updateStatus('অ্যাড লোড হতে সময় লাগছে। আবার চেষ্টা করুন।');
                 }
             }, LOAD_TIMEOUT_MS);
         }
