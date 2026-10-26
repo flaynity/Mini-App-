@@ -10,7 +10,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
     <!-- ২. Adexium Interstitial Widget Script -->
-    <script type="text/javascript" src="https://cdn.techtg.space/assets/js/tg-ads-co-widget.min.js"></script>
+    <script type="text/javascript" src="https://cdn.adexium.tech/assets/js/tg-ads-co-widget.min.js"></script>
     <!-- ফলব্যাক: প্রথম CDN লোড না হলে Adexium ডকের অফিশিয়াল CDN থেকে লোড হবে -->
     <script type="text/javascript">
         if (typeof AdexiumWidget === 'undefined') {
@@ -196,11 +196,11 @@
         const AUTO_AD_INTERVAL_SECONDS = 5;
 
         // অ্যাড লোড হতে সর্বোচ্চ কত মিলিসেকেন্ড অপেক্ষা করবে
-        const LOAD_TIMEOUT_MS = 15000;
+        const LOAD_TIMEOUT_MS = 25000;
 
         // 👉 প্রথমে true দিয়ে টেস্ট করুন (প্রতিবার টেস্ট অ্যাড আসবে)।
         //    টেস্ট অ্যাড এলে কোড ঠিক আছে; তারপর রিয়াল ইনকামের জন্য false করুন।
-        const DEBUG_MODE = false;
+        const DEBUG_MODE = true;
         // =========================================================================
 
         const tg = window.Telegram?.WebApp;
@@ -252,6 +252,7 @@
             }
 
             adexiumAds.on('adReceived', (ad) => {
+                console.info('[Adexium] adReceived', ad);
                 clearTimeout(loadTimer);
                 isLoading = false;
                 retryDelay = 2000;
@@ -265,6 +266,7 @@
             });
 
             adexiumAds.on('noAdFound', () => {
+                console.warn('[Adexium] noAdFound: no ad returned for this request');
                 clearTimeout(loadTimer);
                 isLoading = false;
                 if (wantShow) {
@@ -277,7 +279,13 @@
                 retryDelay = Math.min(retryDelay * 2, 30000);
             });
 
-            adexiumAds.on('adDisplayed', () => countAd());
+            adexiumAds.on('adDisplayed', () => {
+                console.info('[Adexium] adDisplayed');
+                countAd();
+            });
+            adexiumAds.on('adPlaybackCompleted', () => {
+                console.info('[Adexium] adPlaybackCompleted');
+            });
             adexiumAds.on('adClosed', () => onAdFinished(true));
             adexiumAds.on('adRedirected', () => onAdFinished(true));
 
@@ -425,7 +433,7 @@
                 isLoading = false;
                 if (wantShow) {
                     wantShow = false;
-                    updateStatus('অ্যাড লোড হতে সময় লাগছে। আবার চেষ্টা করুন।');
+                    updateStatus('⏱️ ২৫ সেকেন্ডেও বিজ্ঞাপন আসেনি। SDK/Widget ID/Adexium inventory পরীক্ষা করুন। আবার চেষ্টা করতে বাটনে চাপ দিন।');
                 }
             }, LOAD_TIMEOUT_MS);
         }
