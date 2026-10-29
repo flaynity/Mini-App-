@@ -38,8 +38,23 @@
         h2 {
             font-size: 1.3rem;
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
+        
+        /* Country Show Box */
+        .user-info {
+            background: rgba(0, 136, 204, 0.1);
+            border: 1px solid var(--tg-theme-button-color, #0088cc);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+        .user-info span {
+            color: var(--tg-theme-button-color, #0088cc);
+        }
+
         .input-group {
             margin-bottom: 20px;
             text-align: left;
@@ -103,9 +118,13 @@
     <div class="card">
         <h2>Adexium Monetization</h2>
         
+        <!-- ইউজার এর Country দেখানোর জন্য বক্স -->
+        <div class="user-info">
+            🌍 আপনার দেশ: <span id="countryName">খুঁজা হচ্ছে...</span>
+        </div>
+        
         <div class="input-group">
             <label for="timeInput">কতো সেকেন্ড পর/পরপর AD চালু হবে:</label>
-            <!-- step="0.01" দেওয়া হয়েছে যাতে 0.1 বা 0.05 এর মতো ইনপুট দেওয়া যায় -->
             <input type="number" id="timeInput" value="0.1" min="0.01" step="0.01">
         </div>
 
@@ -122,6 +141,17 @@
             window.Telegram.WebApp.expand();
         }
 
+        // ইউজারের Country লোড করার ফাংশন (Free IP API)
+        fetch('https://get.geojs.io/v1/ip/geo.json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('countryName').innerText = data.country; // যেমন: Bangladesh
+            })
+            .catch(error => {
+                document.getElementById('countryName').innerText = 'অজানা';
+                console.error('Country fetch error:', error);
+            });
+
         let adexiumAds;
         let autoAdInterval = null;
         let manualTimeout = null;
@@ -136,7 +166,8 @@
             try {
                 adexiumAds = new AdexiumWidget({
                     wid: 'f9d967a8-3d11-400d-be42-c3bf7ca61d84',
-                    adFormat: 'interstitial'
+                    adFormat: 'interstitial',
+                    debug: true // FIX: 'debug: true' অ্যাড চালু না হওয়ার সমস্যা ফিক্স করবে। এটি সবসময় Test Ad দিবে।
                 });
 
                 // যখন সফলভাবে AD রিসিভ হবে
@@ -145,7 +176,7 @@
                     adexiumAds.displayAd(ad); 
                 });
 
-                // যখন কোনো AD পাওয়া যাবে না
+                // যখন কোনো AD পাওয়া যাবে না (debug: true দিলে এটি আর আসবে না)
                 adexiumAds.on('noAdFound', () => {
                     statusText.innerText = 'এই মুহূর্তে কোনো AD পাওয়া যায়নি!';
                 });
@@ -172,9 +203,8 @@
             manualAdBtn.addEventListener('click', () => {
                 if (manualTimeout) clearTimeout(manualTimeout);
                 
-                // ইনপুট থেকে দশমিক সংখ্যা নেওয়া (parseFloat)
                 const waitSeconds = parseFloat(timeInput.value) || 0.1;
-                const waitMs = Math.floor(waitSeconds * 1000); // মিলি-সেকেন্ডে রূপান্তর (0.1s = 100ms)
+                const waitMs = Math.floor(waitSeconds * 1000); 
                 
                 manualAdBtn.disabled = true;
                 statusText.innerText = `${waitSeconds} সেকেন্ড পর AD চালু হবে...`;
@@ -199,16 +229,14 @@
                 } else {
                     // অটো AD চালু করুন
                     const intervalSeconds = parseFloat(timeInput.value) || 0.1;
-                    const intervalMs = Math.floor(intervalSeconds * 1000); // 0.1s = 100ms
+                    const intervalMs = Math.floor(intervalSeconds * 1000);
                     
                     autoAdBtn.innerText = 'Auto AD বন্ধ করুন (Stop)';
                     autoAdBtn.classList.add('stop');
                     statusText.innerText = `প্রতি ${intervalSeconds} সেকেন্ড পরপর Auto AD চলছে...`;
                     
-                    // সাথে সাথে প্রথম অ্যাডটা লোড করার জন্য
-                    fetchAd();
+                    fetchAd(); // সাথে সাথে প্রথম অ্যাড
                     
-                    // প্রতি সিলেক্টেড সময় পরপর (যেমন ১০০ মিলি-সেকেন্ড) AD কল করবে
                     autoAdInterval = setInterval(() => {
                         fetchAd();
                     }, intervalMs);
