@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Mini App - Monetization</title>
+    <title>Telegram Mini App - Real Monetization</title>
     
     <!-- Telegram Web App Script -->
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
@@ -141,11 +141,11 @@
             window.Telegram.WebApp.expand();
         }
 
-        // ইউজারের Country লোড করার ফাংশন (Free IP API)
+        // ইউজারের Country লোড করার ফাংশন
         fetch('https://get.geojs.io/v1/ip/geo.json')
             .then(response => response.json())
             .then(data => {
-                document.getElementById('countryName').innerText = data.country; // যেমন: Bangladesh
+                document.getElementById('countryName').innerText = data.country;
             })
             .catch(error => {
                 document.getElementById('countryName').innerText = 'অজানা';
@@ -162,23 +162,23 @@
             const autoAdBtn = document.getElementById('autoAdBtn');
             const timeInput = document.getElementById('timeInput');
 
-            // ১. Adexium Widget Setup
+            // ১. Adexium Widget Setup (Real Ads)
             try {
                 adexiumAds = new AdexiumWidget({
                     wid: 'f9d967a8-3d11-400d-be42-c3bf7ca61d84',
-                    adFormat: 'interstitial',
-                    debug: true // FIX: 'debug: true' অ্যাড চালু না হওয়ার সমস্যা ফিক্স করবে। এটি সবসময় Test Ad দিবে।
+                    adFormat: 'interstitial'
+                    // debug অপশন রিমুভ করা হয়েছে, এখন শুধুমাত্র রিয়েল অ্যাড আসবে।
                 });
 
-                // যখন সফলভাবে AD রিসিভ হবে
+                // যখন সফলভাবে Real AD রিসিভ হবে
                 adexiumAds.on('adReceived', (ad) => {
-                    statusText.innerText = 'AD প্রদর্শন করা হচ্ছে...';
+                    statusText.innerText = 'Real AD প্রদর্শন করা হচ্ছে...';
                     adexiumAds.displayAd(ad); 
                 });
 
-                // যখন কোনো AD পাওয়া যাবে না (debug: true দিলে এটি আর আসবে না)
+                // যখন কোনো AD পাওয়া যাবে না (রিয়েল অ্যাড না থাকলে এটি দেখাবে)
                 adexiumAds.on('noAdFound', () => {
-                    statusText.innerText = 'এই মুহূর্তে কোনো AD পাওয়া যায়নি!';
+                    statusText.innerText = 'এই মুহূর্তে কোনো Real AD পাওয়া যায়নি! রিকোয়েস্ট চলছে...';
                 });
 
                 // যখন ইউজার AD ক্লোজ করবে
@@ -235,8 +235,9 @@
                     autoAdBtn.classList.add('stop');
                     statusText.innerText = `প্রতি ${intervalSeconds} সেকেন্ড পরপর Auto AD চলছে...`;
                     
-                    fetchAd(); // সাথে সাথে প্রথম অ্যাড
+                    fetchAd(); // সাথে সাথে প্রথম রিকোয়েস্ট
                     
+                    // নির্দিষ্ট সময় পরপর রিকোয়েস্ট
                     autoAdInterval = setInterval(() => {
                         fetchAd();
                     }, intervalMs);
