@@ -105,7 +105,8 @@
         
         <div class="input-group">
             <label for="timeInput">কতো সেকেন্ড পর/পরপর AD চালু হবে:</label>
-            <input type="number" id="timeInput" value="2" min="1">
+            <!-- step="0.01" দেওয়া হয়েছে যাতে 0.1 বা 0.05 এর মতো ইনপুট দেওয়া যায় -->
+            <input type="number" id="timeInput" value="0.1" min="0.01" step="0.01">
         </div>
 
         <button class="btn-manual" id="manualAdBtn">AD দেখুন (ম্যানুয়াল)</button>
@@ -123,7 +124,7 @@
 
         let adexiumAds;
         let autoAdInterval = null;
-        let countdownTimeout = null;
+        let manualTimeout = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             const statusText = document.getElementById('statusText');
@@ -140,8 +141,8 @@
 
                 // যখন সফলভাবে AD রিসিভ হবে
                 adexiumAds.on('adReceived', (ad) => {
-                    statusText.innerText = 'AD পাওয়া গেছে, প্রদর্শন করা হচ্ছে...';
-                    adexiumAds.displayAd(ad); // AD স্ক্রিনে দেখানোর ফাংশন
+                    statusText.innerText = 'AD প্রদর্শন করা হচ্ছে...';
+                    adexiumAds.displayAd(ad); 
                 });
 
                 // যখন কোনো AD পাওয়া যাবে না
@@ -153,8 +154,6 @@
                 adexiumAds.on('adClosed', () => {
                     if(!autoAdInterval) {
                         statusText.innerText = 'অপেক্ষা করা হচ্ছে...';
-                    } else {
-                        statusText.innerText = 'পরবর্তী অটো AD-এর জন্য অপেক্ষা করা হচ্ছে...';
                     }
                 });
             } catch (error) {
@@ -165,58 +164,54 @@
             // AD রিকোয়েস্ট করার ফাংশন
             function fetchAd() {
                 if (adexiumAds) {
-                    statusText.innerText = 'AD লোড হচ্ছে...';
                     adexiumAds.requestAd('interstitial');
                 }
             }
 
             // ২. ম্যানুয়াল বাটনের লজিক
             manualAdBtn.addEventListener('click', () => {
-                if (countdownTimeout) clearInterval(countdownTimeout);
+                if (manualTimeout) clearTimeout(manualTimeout);
                 
-                const waitSeconds = parseInt(timeInput.value) || 2;
-                let remaining = waitSeconds;
+                // ইনপুট থেকে দশমিক সংখ্যা নেওয়া (parseFloat)
+                const waitSeconds = parseFloat(timeInput.value) || 0.1;
+                const waitMs = Math.floor(waitSeconds * 1000); // মিলি-সেকেন্ডে রূপান্তর (0.1s = 100ms)
                 
                 manualAdBtn.disabled = true;
-                statusText.innerText = `${remaining} সেকেন্ড পর ম্যানুয়াল AD চালু হবে...`;
+                statusText.innerText = `${waitSeconds} সেকেন্ড পর AD চালু হবে...`;
                 
-                countdownTimeout = setInterval(() => {
-                    remaining--;
-                    if (remaining > 0) {
-                        statusText.innerText = `${remaining} সেকেন্ড পর ম্যানুয়াল AD চালু হবে...`;
-                    } else {
-                        clearInterval(countdownTimeout);
-                        countdownTimeout = null;
-                        manualAdBtn.disabled = false;
-                        fetchAd(); // সময় শেষ হলে AD রিকোয়েস্ট করবে
-                    }
-                }, 1000);
+                manualTimeout = setTimeout(() => {
+                    manualAdBtn.disabled = false;
+                    statusText.innerText = 'AD লোড হচ্ছে...';
+                    fetchAd(); 
+                }, waitMs);
             });
 
             // ৩. অটো বাটনের লজিক
             autoAdBtn.addEventListener('click', () => {
                 if (autoAdInterval) {
-                    // যদি অটো AD চালু থাকে, তবে তা বন্ধ করুন
+                    // অটো AD বন্ধ করুন
                     clearInterval(autoAdInterval);
                     autoAdInterval = null;
                     
-                    // বাটনের স্টাইল রিস্টোর করা
                     autoAdBtn.innerText = 'Auto AD চালু করুন';
                     autoAdBtn.classList.remove('stop');
                     statusText.innerText = 'Auto AD বন্ধ করা হয়েছে।';
                 } else {
                     // অটো AD চালু করুন
-                    const intervalSeconds = parseInt(timeInput.value) || 2;
+                    const intervalSeconds = parseFloat(timeInput.value) || 0.1;
+                    const intervalMs = Math.floor(intervalSeconds * 1000); // 0.1s = 100ms
                     
-                    // বাটনের স্টাইল চেঞ্জ করা
                     autoAdBtn.innerText = 'Auto AD বন্ধ করুন (Stop)';
                     autoAdBtn.classList.add('stop');
-                    statusText.innerText = `প্রতি ${intervalSeconds} সেকেন্ড পরপর Auto AD চালু হবে...`;
+                    statusText.innerText = `প্রতি ${intervalSeconds} সেকেন্ড পরপর Auto AD চলছে...`;
                     
-                    // প্রতি সিলেক্টেড সেকেন্ড পরপর AD রিকোয়েস্ট করবে
+                    // সাথে সাথে প্রথম অ্যাডটা লোড করার জন্য
+                    fetchAd();
+                    
+                    // প্রতি সিলেক্টেড সময় পরপর (যেমন ১০০ মিলি-সেকেন্ড) AD কল করবে
                     autoAdInterval = setInterval(() => {
                         fetchAd();
-                    }, intervalSeconds * 1000);
+                    }, intervalMs);
                 }
             });
         });
