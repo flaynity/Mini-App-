@@ -1,538 +1,225 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-
- <script async type="application/javascript" src="https://a.pemsrv.com/ad-provider.js"></script> 
- <ins class="eas6a97888e33" data-zoneid="6066312"></ins> 
- <script>(AdProvider = window.AdProvider || []).push({"serve": {}});</script>
-<script async type="application/javascript" src="https://a.magsrv.com/ad-provider.js"></script> 
- <ins class="eas6a97888e37" data-zoneid="6066304"></ins> 
- <script>(AdProvider = window.AdProvider || []).push({"serve": {}});</script>
-    <meta name="6a97888e-site-verification" content="8921bb526632bc63cd5a25e37579e22f">
-
-    <meta name="d41357c6564eaeeaf8c065390a85e9f98763b872" content="d41357c6564eaeeaf8c065390a85e9f98763b872" />
-    <meta name="referrer" content="no-referrer-when-downgrade" />
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>All-in-One Ad Monetization Mini App</title>
-
-    <!-- ১. Telegram Web App SDK -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini App - Monetization</title>
+    
+    <!-- Telegram Web App Script -->
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
-
-    <!-- OnClicka TMA Rewarded Video SDK -->
-    <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
-
-    <!-- ২. Adexium Interstitial Widget Script -->
-    <script type="text/javascript" src="https://cdn.adexium.tech/assets/js/tg-ads-co-widget.min.js"></script>
-    <!-- SDK fallback: একই official TMA SDK URL -->
-    <script type="text/javascript">
-        if (typeof AdexiumWidget === 'undefined') {
-            document.write('<script src="https://cdn.techtg.space/assets/js/tg-ads-co-widget.min.js"><\/script>');
-        }
-    </script>
-
-    <!-- ৩. Adexium Web Push (In-page) Script -->
-    <script async src="https://cdn.okiksdelivery.com/assets/js/axm.min.js"
-            data-wid="f61c981d-1e52-46dc-a929-4fd3493f3cd7" data-format="inpage"></script>
-
-    <!-- ৪. Adexium Web POPs Script
-         টেস্টের জন্য বন্ধ রাখা হয়েছে: একই axm.min.js দুইবার লোড হলে এবং POPs স্ক্রিপ্ট
-         ক্লিক ধরে ফেললে বাটনের অ্যাড আটকে যেতে পারে। অ্যাড কাজ করলে নিচের লাইন চালু করুন।
-    <script async src="https://cdn.okiksdelivery.com/assets/js/axm.min.js"
-            data-wid="12d73b0c-b6f8-4471-94fe-b5adbcc87dfa,f61c981d-1e52-46dc-a929-4fd3493f3cd7"></script>
-    -->
+    
+    <!-- Adexium Widget Script -->
+    <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
 
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --text-color: #f8fafc;
-            --hint-color: #94a3b8;
-            --card-bg: #1e293b;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        /* Telegram Theming */
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 390px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tg-theme-bg-color, #f4f4f4);
+            color: var(--tg-theme-text-color, #333);
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-        .subtitle { font-size: 13px; color: var(--hint-color); margin-bottom: 18px; }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.04);
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .stat-label { font-size: 12px; color: var(--hint-color); margin-bottom: 4px; }
-        .stat-value { font-size: 18px; font-weight: 700; color: #38bdf8; }
-
-        .status-box {
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 10px;
-            padding: 12px;
-            font-size: 13px;
-            color: #cbd5e1;
-            margin-bottom: 18px;
-            min-height: 48px;
+            padding: 20px;
+            margin: 0;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-left: 3px solid #3b82f6;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-
-        .btn-group { display: flex; flex-direction: column; gap: 12px; }
-
-        .btn {
+        .card {
+            background-color: var(--tg-theme-secondary-bg-color, #ffffff);
+            padding: 25px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 350px;
+        }
+        h2 {
+            font-size: 1.3rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 1px solid var(--tg-theme-hint-color, #ccc);
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: var(--tg-theme-bg-color, #fff);
+            color: var(--tg-theme-text-color, #333);
+        }
+        button {
             width: 100%;
             padding: 14px;
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
             border: none;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            touch-action: manipulation;
+            margin-bottom: 15px;
+            transition: opacity 0.2s;
         }
-
-        .btn:active { transform: scale(0.98); }
-
+        button:active {
+            opacity: 0.8;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         .btn-manual {
-            background: #2563eb;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            background-color: var(--tg-theme-button-color, #0088cc);
+            color: var(--tg-theme-button-text-color, #fff);
         }
-
-        .btn-auto-start {
-            background: #16a34a;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        .btn-auto {
+            background-color: #28a745;
+            color: #fff;
         }
-
-        .btn-auto-stop {
-            background: #dc2626 !important;
-            color: #ffffff !important;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
-            animation: pulse 1.2s infinite;
+        .btn-auto.stop {
+            background-color: #dc3545;
         }
-
-        .btn-direct-link {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-            font-weight: 700;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
+        .status {
+            font-size: 0.95rem;
+            color: var(--tg-theme-hint-color, #666);
+            margin-top: 10px;
+            font-weight: 500;
+            min-height: 20px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1 class="title">Ad Monetization Hub</h1>
-        <p class="subtitle">সবগুলো অ্যাড ফরম্যাট একসাথে চালু আছে</p>
-
-        <div class="stats-grid">
-            <div class="stat-box">
-                <div class="stat-label">মোট দেখা অ্যাড</div>
-                <div class="stat-value" id="adCounter">0</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">পরবর্তী অটো অ্যাড</div>
-                <div class="stat-value" id="autoTimer">অফ</div>
-            </div>
+    <div class="card">
+        <h2>Adexium Monetization</h2>
+        
+        <div class="input-group">
+            <label for="timeInput">কতো সেকেন্ড পর/পরপর AD চালু হবে:</label>
+            <input type="number" id="timeInput" value="2" min="1">
         </div>
 
-        <div class="status-box" id="statusText">পছন্দের অপশন সিলেক্ট করুন</div>
-
-        <section class="stat-box" id="onclickaBannerSlot" style="margin:12px 0; min-height:60px;">
-            <div class="stat-label">Banner Ad</div>
-            <div data-banner-id="6154266"></div>
-        </section>
-
-        <div class="btn-group">
-            <button class="btn btn-direct-link" onclick="openDirectLink()">
-                💎 প্রিমিয়াম অফার (Direct Link)
-            </button>
-
-            <button class="btn btn-manual" onclick="showOnclickaRewardedAd()">
-                ▶ Rewarded Video দেখুন
-            </button>
-
-            <button class="btn btn-manual" onclick="showManualAd()">
-                🎬 AD দেখুন (ম্যানুয়াল)
-            </button>
-
-            <button class="btn btn-auto-start" id="autoBtn" onclick="toggleAutoAd()"></button>
-        </div>
+        <button class="btn-manual" id="manualAdBtn">AD দেখুন (ম্যানুয়াল)</button>
+        <button class="btn-auto" id="autoAdBtn">Auto AD চালু করুন</button>
+        
+        <div class="status" id="statusText">অপেক্ষা করা হচ্ছে...</div>
     </div>
 
     <script type="text/javascript">
-        // =========================================================================
-        // ⚙️ সেটিংস
-        // =========================================================================
-        const WIDGET_ID = 'f9d967a8-3d11-400d-be42-c3bf7ca61d84';
-        const ONCLICKA_REWARDED_SPOTS = ['615426', '6154264'];
-        let onclickaShowMethods = [];
-        let onclickaInitIndex = 0;
-        const DIRECT_LINK = 'https://get.atechspace.live/dl/8c075e7a-5255-4813-884c-03b9ae47ddbe';
-
-        // একটি অ্যাড বন্ধ হওয়ার কত সেকেন্ড পর পরেরটি আসবে
-        const AUTO_AD_INTERVAL_SECONDS = 5;
-
-        // অ্যাড লোড হতে সর্বোচ্চ কত মিলিসেকেন্ড অপেক্ষা করবে
-        const LOAD_TIMEOUT_MS = 25000;
-
-        // 👉 প্রথমে true দিয়ে টেস্ট করুন (প্রতিবার টেস্ট অ্যাড আসবে)।
-        //    টেস্ট অ্যাড এলে কোড ঠিক আছে; তারপর রিয়াল ইনকামের জন্য false করুন।
-        const DEBUG_MODE = false;
-        // =========================================================================
-
-        const tg = window.Telegram?.WebApp;
-        if (tg) {
-            tg.ready();
-            tg.expand();
+        // Initialize Telegram App
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
         }
 
-        let adexiumAds = null;
-        let readyAd = null;       // আগে থেকে লোড করা অ্যাড (ক্লিকে সাথে সাথে দেখাবে)
-        let isLoading = false;    // অ্যাড রিকোয়েস্ট চলছে
-        let isShowing = false;    // এখন স্ক্রিনে অ্যাড আছে
-        let wantShow = false;     // ইউজার ক্লিক করেছে, অ্যাড আসার অপেক্ষা
-        let counted = false;      // এই অ্যাড গোনা হয়েছে কিনা
-        let totalAdsWatched = 0;
-        let retryDelay = 2000;
-        let loadTimer = null;
-        let showGuard = null;
-        let retryTimer = null;
-
-        let isAutoRunning = false;
-        let countdown = AUTO_AD_INTERVAL_SECONDS;
-        let autoIntervalId = null;
+        let adexiumAds;
+        let autoAdInterval = null;
+        let countdownTimeout = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            resetAutoButtonUI();
-            initAdexium();
-            initOnclickaRewardedAds();
-        });
+            const statusText = document.getElementById('statusText');
+            const manualAdBtn = document.getElementById('manualAdBtn');
+            const autoAdBtn = document.getElementById('autoAdBtn');
+            const timeInput = document.getElementById('timeInput');
 
-        function initAdexium() {
-            if (typeof AdexiumWidget === 'undefined') {
-                updateStatus('Ad SDK লোড হয়নি। ইন্টারনেট/SDK URL পরীক্ষা করে আবার পেজ খুলুন।');
-                return;
-            }
-            if (!tg || !tg.initData) {
-                updateStatus('⚠️ Telegram Mini App context পাওয়া যায়নি; Telegram-এর ভিতরে খুলে আবার চেষ্টা করুন।');
-            }
-
+            // ১. Adexium Widget Setup
             try {
                 adexiumAds = new AdexiumWidget({
-                    wid: WIDGET_ID,
-                    adFormat: 'interstitial',
-                    debug: DEBUG_MODE
+                    wid: 'f9d967a8-3d11-400d-be42-c3bf7ca61d84',
+                    adFormat: 'interstitial'
                 });
-            } catch (err) {
-                console.error('Init error:', err);
-                updateStatus('❌ Adexium চালু করা যায়নি: ' + err.message);
-                return;
-            }
 
-            adexiumAds.on('adReceived', (ad) => {
-                console.info('[Adexium] adReceived', ad);
-                clearTimeout(loadTimer);
-                isLoading = false;
-                retryDelay = 2000;
+                // যখন সফলভাবে AD রিসিভ হবে
+                adexiumAds.on('adReceived', (ad) => {
+                    statusText.innerText = 'AD পাওয়া গেছে, প্রদর্শন করা হচ্ছে...';
+                    adexiumAds.displayAd(ad); // AD স্ক্রিনে দেখানোর ফাংশন
+                });
 
-                if (wantShow && !isShowing) {
-                    wantShow = false;
-                    displayNow(ad);
-                } else {
-                    readyAd = ad; // পরের ক্লিকের জন্য রেডি
-                }
-            });
+                // যখন কোনো AD পাওয়া যাবে না
+                adexiumAds.on('noAdFound', () => {
+                    statusText.innerText = 'এই মুহূর্তে কোনো AD পাওয়া যায়নি!';
+                });
 
-            adexiumAds.on('noAdFound', () => {
-                console.warn('[Adexium] noAdFound: no ad returned for this request');
-                clearTimeout(loadTimer);
-                isLoading = false;
-                if (wantShow) {
-                    wantShow = false;
-                    updateStatus('এখন কোনো অ্যাড পাওয়া যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।');
-                }
-                // ব্যাকঅফ দিয়ে আবার প্রিলোড
-                clearTimeout(retryTimer);
-                retryTimer = setTimeout(preloadAd, retryDelay);
-                retryDelay = Math.min(retryDelay * 2, 30000);
-            });
-
-            adexiumAds.on('adDisplayed', () => {
-                console.info('[Adexium] adDisplayed');
-                countAd();
-            });
-            adexiumAds.on('adPlaybackCompleted', () => {
-                console.info('[Adexium] adPlaybackCompleted');
-            });
-            adexiumAds.on('adClosed', () => onAdFinished(true));
-            adexiumAds.on('adRedirected', () => onAdFinished(true));
-
-            // পেজ খোলার সাথে সাথেই প্রথম অ্যাড লোড করে রাখি
-            preloadAd();
-        }
-
-
-        // OnClicka TMA Rewarded Video: initialize both supplied spots.
-        async function initOnclickaRewardedAds() {
-            if (typeof window.initCdTma !== 'function') {
-                console.warn('[OnClicka] TMA SDK not available.');
-                return;
-            }
-            onclickaShowMethods = [];
-            for (const spotId of ONCLICKA_REWARDED_SPOTS) {
-                try {
-                    const show = await window.initCdTma({ id: spotId });
-                    if (typeof show === 'function') onclickaShowMethods.push({ spotId, show });
-                } catch (err) {
-                    console.warn('[OnClicka] Could not initialize rewarded spot', spotId, err);
-                }
-            }
-        }
-
-        async function showOnclickaRewardedAd() {
-            const button = document.querySelector('button[onclick="showOnclickaRewardedAd()"]');
-            if (button) button.disabled = true;
-            updateStatus('⏳ OnClicka Rewarded Video লোড হচ্ছে...');
-            try {
-                if (!onclickaShowMethods.length) await initOnclickaRewardedAds();
-                if (!onclickaShowMethods.length) {
-                    updateStatus('OnClicka Rewarded Video প্রস্তুত নয়। SDK, Spot ID ও Telegram Mini App সেটআপ পরীক্ষা করুন।');
-                    return;
-                }
-                let lastError = null;
-                for (const item of onclickaShowMethods) {
-                    try {
-                        await item.show();
-                        totalAdsWatched++;
-                        document.getElementById('adCounter').innerText = totalAdsWatched;
-                        updateStatus('✅ OnClicka Rewarded Video সম্পন্ন হয়েছে।');
-                        return;
-                    } catch (err) {
-                        lastError = err;
-                        console.warn('[OnClicka] Rewarded spot failed:', item.spotId, err);
+                // যখন ইউজার AD ক্লোজ করবে
+                adexiumAds.on('adClosed', () => {
+                    if(!autoAdInterval) {
+                        statusText.innerText = 'অপেক্ষা করা হচ্ছে...';
+                    } else {
+                        statusText.innerText = 'পরবর্তী অটো AD-এর জন্য অপেক্ষা করা হচ্ছে...';
                     }
+                });
+            } catch (error) {
+                console.error("Adexium initialization error:", error);
+                statusText.innerText = 'Adexium লোড করতে সমস্যা হয়েছে!';
+            }
+
+            // AD রিকোয়েস্ট করার ফাংশন
+            function fetchAd() {
+                if (adexiumAds) {
+                    statusText.innerText = 'AD লোড হচ্ছে...';
+                    adexiumAds.requestAd('interstitial');
                 }
-                updateStatus('এখন OnClicka ভিডিও বিজ্ঞাপন পাওয়া যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।');
-                if (lastError) console.warn('[OnClicka] All rewarded spots failed:', lastError);
-            } finally {
-                if (button) button.disabled = false;
-            }
-        }
-
-        // ১. Direct Link
-        function openDirectLink() {
-            updateStatus('🚀 প্রিমিয়াম অফারে রিডাইরেক্ট করা হচ্ছে...');
-            if (tg && typeof tg.openLink === 'function') {
-                tg.openLink(DIRECT_LINK);
-            } else {
-                window.open(DIRECT_LINK, '_blank');
-            }
-        }
-
-        // ২. ম্যানুয়াল অ্যাড
-        function showManualAd() {
-            showAd();
-        }
-
-        // ৩. অটো অ্যাড টগল
-        function toggleAutoAd() {
-            if (isAutoRunning) {
-                stopAutoAd();
-            } else {
-                startAutoAd();
-            }
-        }
-
-        function startAutoAd() {
-            isAutoRunning = true;
-            countdown = AUTO_AD_INTERVAL_SECONDS;
-
-            const autoBtn = document.getElementById('autoBtn');
-            autoBtn.className = 'btn btn-auto-stop';
-            autoBtn.innerHTML = '🛑 Stop Auto AD';
-
-            updateStatus(`🚀 Auto AD চালু হয়েছে (প্রতি ${AUTO_AD_INTERVAL_SECONDS} সেকেন্ড পর পর)...`);
-            showAd();
-
-            clearInterval(autoIntervalId);
-            autoIntervalId = setInterval(autoTick, 1000);
-        }
-
-        function autoTick() {
-            const timerEl = document.getElementById('autoTimer');
-
-            // অ্যাড চলার সময় বা লোডের অপেক্ষায় থাকলে কাউন্টডাউন থামানো থাকবে
-            if (isShowing || wantShow) {
-                timerEl.innerText = '📺';
-                countdown = AUTO_AD_INTERVAL_SECONDS;
-                return;
             }
 
-            countdown--;
-            timerEl.innerText = `${Math.max(countdown, 0)}s`;
+            // ২. ম্যানুয়াল বাটনের লজিক
+            manualAdBtn.addEventListener('click', () => {
+                if (countdownTimeout) clearInterval(countdownTimeout);
+                
+                const waitSeconds = parseInt(timeInput.value) || 2;
+                let remaining = waitSeconds;
+                
+                manualAdBtn.disabled = true;
+                statusText.innerText = `${remaining} সেকেন্ড পর ম্যানুয়াল AD চালু হবে...`;
+                
+                countdownTimeout = setInterval(() => {
+                    remaining--;
+                    if (remaining > 0) {
+                        statusText.innerText = `${remaining} সেকেন্ড পর ম্যানুয়াল AD চালু হবে...`;
+                    } else {
+                        clearInterval(countdownTimeout);
+                        countdownTimeout = null;
+                        manualAdBtn.disabled = false;
+                        fetchAd(); // সময় শেষ হলে AD রিকোয়েস্ট করবে
+                    }
+                }, 1000);
+            });
 
-            if (countdown <= 0) {
-                showAd();
-                countdown = AUTO_AD_INTERVAL_SECONDS;
-            }
-        }
-
-        function stopAutoAd() {
-            isAutoRunning = false;
-            clearInterval(autoIntervalId);
-            wantShow = false;
-
-            resetAutoButtonUI();
-            document.getElementById('autoTimer').innerText = 'অফ';
-            updateStatus('🛑 Auto AD বন্ধ করা হয়েছে।');
-        }
-
-        function resetAutoButtonUI() {
-            const autoBtn = document.getElementById('autoBtn');
-            autoBtn.className = 'btn btn-auto-start';
-            autoBtn.innerHTML = `⚡ Auto AD চালু করুন (${AUTO_AD_INTERVAL_SECONDS} সে.)`;
-        }
-
-        // =========================================================================
-        // 🚀 Ultra Fast Core: প্রিলোড + ইনস্ট্যান্ট ডিসপ্লে
-        // =========================================================================
-
-        // ক্লিক করলে: রেডি অ্যাড থাকলে সাথে সাথে দেখায়, না থাকলে লোড হওয়া মাত্র দেখায়
-        function showAd() {
-            if (!adexiumAds) {
-                initAdexium(); // আবার চালু করার চেষ্টা; ব্যর্থ হলে আসল কারণ স্ট্যাটাসে থাকবে
-                if (!adexiumAds) return;
-            }
-            if (isShowing) return;
-
-            if (readyAd) {
-                const ad = readyAd;
-                readyAd = null;
-                displayNow(ad);
-                return;
-            }
-
-            wantShow = true;
-            updateStatus('⏳ বিজ্ঞাপন লোড হচ্ছে...');
-            preloadAd();
-        }
-
-        function displayNow(ad) {
-            isShowing = true;
-            counted = false;
-            updateStatus('📺 বিজ্ঞাপন প্রদর্শিত হচ্ছে...');
-
-            try {
-                adexiumAds.displayAd(ad);
-            } catch (e) {
-                console.error('Display error:', e);
-                isShowing = false;
-                updateStatus('অ্যাড দেখানো যায়নি। আবার চেষ্টা করুন।');
-                preloadAd();
-                return;
-            }
-
-            // adClosed কোনো কারণে না এলে যেন আটকে না থাকে
-            clearTimeout(showGuard);
-            showGuard = setTimeout(() => onAdFinished(false), 60000);
-        }
-
-        // পরের অ্যাড আগেই রিকোয়েস্ট করে রাখে
-        function preloadAd() {
-            if (!adexiumAds || readyAd || isLoading || isShowing) return;
-
-            isLoading = true;
-            try {
-                adexiumAds.requestAd('interstitial');
-            } catch (e) {
-                console.error('Ad request error:', e);
-                isLoading = false;
-                if (wantShow) {
-                    wantShow = false;
-                    updateStatus('অ্যাড রিকোয়েস্ট ব্যর্থ হয়েছে। SDK/Widget ID পরীক্ষা করুন।');
+            // ৩. অটো বাটনের লজিক
+            autoAdBtn.addEventListener('click', () => {
+                if (autoAdInterval) {
+                    // যদি অটো AD চালু থাকে, তবে তা বন্ধ করুন
+                    clearInterval(autoAdInterval);
+                    autoAdInterval = null;
+                    
+                    // বাটনের স্টাইল রিস্টোর করা
+                    autoAdBtn.innerText = 'Auto AD চালু করুন';
+                    autoAdBtn.classList.remove('stop');
+                    statusText.innerText = 'Auto AD বন্ধ করা হয়েছে।';
+                } else {
+                    // অটো AD চালু করুন
+                    const intervalSeconds = parseInt(timeInput.value) || 2;
+                    
+                    // বাটনের স্টাইল চেঞ্জ করা
+                    autoAdBtn.innerText = 'Auto AD বন্ধ করুন (Stop)';
+                    autoAdBtn.classList.add('stop');
+                    statusText.innerText = `প্রতি ${intervalSeconds} সেকেন্ড পরপর Auto AD চালু হবে...`;
+                    
+                    // প্রতি সিলেক্টেড সেকেন্ড পরপর AD রিকোয়েস্ট করবে
+                    autoAdInterval = setInterval(() => {
+                        fetchAd();
+                    }, intervalSeconds * 1000);
                 }
-                return;
-            }
-
-            clearTimeout(loadTimer);
-            loadTimer = setTimeout(() => {
-                isLoading = false;
-                if (wantShow) {
-                    wantShow = false;
-                    updateStatus('⏱️ ২৫ সেকেন্ডেও বিজ্ঞাপন আসেনি। SDK/Widget ID/Adexium inventory পরীক্ষা করুন। আবার চেষ্টা করতে বাটনে চাপ দিন।');
-                }
-            }, LOAD_TIMEOUT_MS);
-        }
-
-        function countAd() {
-            if (counted) return;
-            counted = true;
-            totalAdsWatched++;
-            document.getElementById('adCounter').innerText = totalAdsWatched;
-        }
-
-        function onAdFinished(shouldCount) {
-            if (!isShowing) return;
-            isShowing = false;
-            clearTimeout(showGuard);
-            if (shouldCount) countAd();
-
-            updateStatus('✅ বিজ্ঞাপন দেখা সম্পন্ন হয়েছে!');
-            preloadAd(); // পরের অ্যাড এখনই রেডি করে রাখি
-        }
-
-        function updateStatus(msg) {
-            document.getElementById('statusText').innerText = msg;
-        }
+            });
+        });
     </script>
 </body>
 </html>
