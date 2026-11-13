@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Mini App - Adexium Integration</title>
+    <title>Telegram Mini App - Adexium</title>
 
-    <!-- দ্রুত লোড হওয়ার জন্য Preconnect -->
     <link rel="preconnect" href="https://telegram.org" crossorigin>
     <link rel="preconnect" href="https://cdn.adexium.tech" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.adexium.tech">
+    <link rel="preconnect" href="https://cdn.tgads.space" crossorigin>
 
     <!-- Telegram Web App Script -->
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
-    <!-- Adexium Official Telegram Mini App Widget Script -->
-    <script type="text/javascript" src="https://cdn.adexium.tech/assets/js/tg-ads-co-widget.min.js"></script>
+    <!-- Adexium Widget Script (ড্যাশবোর্ড ও ডকুমেন্টেশন অনুযায়ী adexium-widget.min.js) -->
+    <script type="text/javascript" src="https://cdn.adexium.tech/assets/js/adexium-widget.min.js"></script>
 
     <style>
         body {
@@ -116,18 +115,15 @@
     </div>
 
     <script type="text/javascript">
-        // নতুন Placement ID (WID) এবং Ad Format
         const WIDGET_ID = '5c539725-5862-4b1a-8f9b-5130f48a98b4';
-        const AD_FORMAT = 'interstitial'; // ড্যাশবোর্ডে push-like বা video থাকলে এখানে পরিবর্তন করুন
+        const AD_FORMAT = 'interstitial';
 
-        // ১. Telegram Mini App ইনিশিয়ালাইজেশন ও চেক
         const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
         if (tg) {
             tg.ready();
             tg.expand();
         }
 
-        // ২. দেশের তথ্য (নন-ব্লকিং)
         fetch('https://get.geojs.io/v1/ip/geo.json')
             .then(res => res.json())
             .then(data => {
@@ -143,11 +139,10 @@
             const debugToggle = document.getElementById('debugToggle');
             const tgEnv = document.getElementById('tgEnv');
 
-            // টেলিগ্রাম Mini App-এর ভেতর আছে কি না তা দেখানো
             if (tg && tg.initData) {
                 tgEnv.innerText = 'Telegram Mini App (সঠিক)';
             } else {
-                tgEnv.innerText = 'সাধারণ ব্রাউজার (রিয়েল অ্যাড নাও আসতে পারে)';
+                tgEnv.innerText = 'সাধারণ ব্রাউজার (বটের ভেতর থেকে খুলুন!)';
             }
 
             let adexiumAds = null;
@@ -159,8 +154,6 @@
                 isRequesting = false;
 
                 if (typeof AdexiumWidget === 'undefined') {
-                    statusText.innerText = '❌ Adexium স্ক্রিপ্ট লোড হয়নি! AdBlocker বা Private DNS বন্ধ করুন।';
-                    showAdBtn.disabled = true;
                     return false;
                 }
 
@@ -183,7 +176,7 @@
                         clearTimeout(requestTimeout);
                         isRequesting = false;
                         showAdBtn.disabled = false;
-                        statusText.innerText = '⚠️ এই মুহূর্তে কোনো Real AD নেই (noAdFound)। Test Mode অন করে চেক করুন।';
+                        statusText.innerText = '⚠️ এই মুহূর্তে কোনো Real AD নেই (noAdFound)।';
                     });
 
                     adexiumAds.on('adClosed', () => {
@@ -205,15 +198,24 @@
                 }
             }
 
-            // প্রথমবার Real Mode দিয়ে ইনিশিয়ালাইজ
-            initAdexium(false);
+            // প্রথম CDN লোড না হলে ড্যাশবোর্ডের cdn.tgads.space থেকে ব্যাকআপ লোড
+            if (!initAdexium(false)) {
+                statusText.innerText = 'ব্যাকআপ সার্ভার থেকে স্ক্রিপ্ট লোড হচ্ছে...';
+                showAdBtn.disabled = true;
+                const fallbackScript = document.createElement('script');
+                fallbackScript.type = 'text/javascript';
+                fallbackScript.src = 'https://cdn.tgads.space/assets/js/adexium-widget.min.js';
+                fallbackScript.onload = () => initAdexium(debugToggle.checked);
+                fallbackScript.onerror = () => {
+                    statusText.innerText = '❌ Adexium স্ক্রিপ্ট লোড হয়নি! AdBlocker বা Private DNS বন্ধ করুন।';
+                };
+                document.head.appendChild(fallbackScript);
+            }
 
-            // Debug সুইচ পরিবর্তন করলে পুনরায় ইনিশিয়ালাইজ
             debugToggle.addEventListener('change', () => {
                 initAdexium(debugToggle.checked);
             });
 
-            // বাটনে ক্লিক করলে সাথে সাথে AD রিকোয়েস্ট
             showAdBtn.addEventListener('click', () => {
                 if (!adexiumAds || isRequesting) return;
 
@@ -225,7 +227,7 @@
                     if (isRequesting) {
                         isRequesting = false;
                         showAdBtn.disabled = false;
-                        statusText.innerText = '⏳ নেটওয়ার্ক থেকে রেসপন্স আসতে দেরি হচ্ছে, আবার চেষ্টা করুন।';
+                        statusText.innerText = '⏳ রেসপন্স আসতে দেরি হচ্ছে, আবার চেষ্টা করুন।';
                     }
                 }, 10000);
 
